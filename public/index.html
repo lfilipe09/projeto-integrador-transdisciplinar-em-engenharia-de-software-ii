@@ -56,6 +56,7 @@
     <header>
       <h1>Projeto Integrador II</h1>
       <span class="badge">Node.js + Express</span>
+      <span id="db-status" class="badge" style="background:#6b7280;">DB: checando…</span>
     </header>
 
     <div class="card">
@@ -92,6 +93,20 @@
           out.textContent = "Erro ao chamar API: " + err.message;
         }
       });
+
+      async function updateHealthBadge() {
+        const badge = document.getElementById('db-status');
+        try {
+          const res = await fetch('/health');
+          const data = await res.json();
+          const status = data?.db?.status || 'desconhecido';
+          badge.textContent = 'DB: ' + status;
+          badge.style.background = status === 'connected' ? '#16a34a' : (status === 'connecting' ? '#f59e0b' : '#ef4444');
+        } catch (e) {
+          badge.textContent = 'DB: indisponível';
+          badge.style.background = '#ef4444';
+        }
+      }
 
       async function loadNotes() {
         const el = document.getElementById('notes');
@@ -171,6 +186,7 @@
         }
       });
 
+      updateHealthBadge();
       loadNotes();
     </script>
   </body>
