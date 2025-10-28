@@ -61,7 +61,7 @@ tests/
 
 ## Deploy
 
-### Opção A: Render (GUI — simples)
+### Opção A: Render (GUI — simples) + MongoDB Atlas (free)
 
 1. Suba este projeto para um repositório no GitHub.
 2. Crie uma conta no https://render.com e clique em “New + > Web Service”.
@@ -69,7 +69,15 @@ tests/
    - Build Command: `npm ci`
    - Start Command: `npm start`
    - Runtime: Node 18
-4. Opcional: use `render.yaml` para Blueprint Deploy.
+4. Em “Environment variables”, adicione `MONGODB_URI` com a string do MongoDB Atlas (veja abaixo).
+5. Opcional: use `render.yaml` para Blueprint Deploy.
+
+MongoDB Atlas (free):
+
+- Acesse https://www.mongodb.com/atlas/database e crie um cluster gratuito (M0).
+- Crie um usuário de banco (Database Access) e libere IP (Network Access: 0.0.0.0/0 para testes).
+- Obtenha a string de conexão (Connect > Drivers) e copie o URI `mongodb+srv://...`.
+- Cole esse URI na variável de ambiente `MONGODB_URI` no Render.
 
 ### Opção B: Docker (portável)
 
@@ -90,7 +98,9 @@ Acesse http://localhost:3000.
 ## Próximos passos sugeridos
 
 - Adicionar mais rotas, controllers e serviços (camada de serviço/negócio)
-- Integrar banco de dados (ex.: PostgreSQL, MongoDB) com ORM (ex.: Prisma, Sequelize, Mongoose)
+- Banco de dados já integrado (MongoDB + Mongoose). Alternativas gratuitas:
+  - Postgres serverless (Neon) usando `pg` ou Prisma
+  - MongoDB Atlas (M0) — já suportado neste projeto
 - Adicionar testes de unidade para regras de negócio
 - Pipeline CI (GitHub Actions) para testes automáticos
 - Documentar API (OpenAPI/Swagger)

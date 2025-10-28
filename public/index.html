@@ -66,6 +66,16 @@
       <pre id="out">Clique para chamar a API…</pre>
     </div>
 
+    <div class="card" style="margin-top:1rem;">
+      <h3>Notas (MongoDB)</h3>
+      <form id="note-form" style="display:flex; gap:.5rem; margin-bottom:.5rem;">
+        <input id="title" placeholder="Título" required />
+        <input id="content" placeholder="Conteúdo" />
+        <button type="submit">Adicionar</button>
+      </form>
+      <pre id="notes">Carregando notas...</pre>
+    </div>
+
     <footer>
       <p>Endpoints úteis: <code>/api/health</code> e <code>/api/hello</code></p>
     </footer>
@@ -82,6 +92,41 @@
           out.textContent = "Erro ao chamar API: " + err.message;
         }
       });
+
+      async function loadNotes() {
+        const el = document.getElementById('notes');
+        el.textContent = 'Carregando notas...';
+        try {
+          const res = await fetch('/api/notes');
+          const data = await res.json();
+          el.textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+          el.textContent = 'Notas indisponíveis: ' + err.message + '\nDica: configure MONGODB_URI no servidor.';
+        }
+      }
+
+      document.getElementById('note-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('title').value.trim();
+        const content = document.getElementById('content').value.trim();
+        if (!title) return alert('Título é obrigatório');
+        try {
+          const res = await fetch('/api/notes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
+          document.getElementById('title').value = '';
+          document.getElementById('content').value = '';
+          await loadNotes();
+        } catch (err) {
+          alert('Erro: ' + err.message + '\nDica: verifique se o banco está conectado');
+        }
+      });
+
+      loadNotes();
     </script>
   </body>
 </html>
